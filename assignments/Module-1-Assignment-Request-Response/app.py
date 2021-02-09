@@ -20,17 +20,20 @@ def mad_lib(adjective,noun):
 
 @app.route('/multiply/<number1>/<number2>')
 def multiply(number1, number2):
-    if (type(number1) is int and type(number2) is int):
-        result = number1 * number2
+    try: 
+        int(number1)
+        int(number2)
+        result = int(number1) * int(number2)
         return f'{number1} times {number2} is {result}.'
-    else:
+    except ValueError:
         return "Invalid inputs. Please try again by entering 2 numbers!"
 
 @app.route('/sayntimes/<word>/<n>')
-def sayntimes(word):
-    if (type(word) is str and type(n) is int):
-        return (str(word) + ' '  * int(n))
-    else:
+def sayntimes(word,n):
+    try: 
+        int(n)
+        return (word + ' ')  * int(n)
+    except ValueError:
         return "Invalid input. Please try again by entering a word and a number!"
 
 
