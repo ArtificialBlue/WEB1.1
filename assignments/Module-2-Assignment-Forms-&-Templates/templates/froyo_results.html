@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Froyo Results</title>
-    </head>
-    <body>
-        <!-- Your HTML code goes here! -->
+{% extends 'base.html' %}
 
+{% block title %}
+    Fro-Yo Results
+{% endblock %} 
 
+{% block content %}
+    <h3> You ordered {{flavor}} flavored Fro-Yo with toppings {{toppings}}!</h3>
+{% endblock %}
 
-
-
-        
-    </body>
-</html>

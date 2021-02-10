@@ -17,56 +17,84 @@ def homepage():
 @app.route('/froyo')
 def choose_froyo():
     """Shows a form to collect the user's Fro-Yo order."""
-    pass
+    return render_template('froyo_form.html')
 
-@app.route('/froyo_results')
+@app.route('/froyo_results', methods=['GET'])
 def show_froyo_results():
-    """Shows the user what they ordered from the previous page."""
-    pass
+    context = {
+        'flavor': request.args.get('flavor'),
+        'toppings': request.args.get('toppings')
+    }
+    return render_template('froyo_results.html', **context)
 
 @app.route('/favorites')
 def favorites():
     """Shows the user a form to choose their favorite color, animal, and city."""
-    pass
+    return """
+    <form action="/favorite_results" method="GET">
+        What is your favorite Color? <br/>
+        <input type="text" name="color"><br/>
+       What is your favorite Animal? <br/>
+        <input type="text" name="animal"><br/>
+       What is your favorite City? <br/>
+        <input type="text" name="city"><br/>       
+        <input type="submit" value="Submit!">
+    </form>
+    """
 
-@app.route('/favorites_results')
+@app.route('/favorite_results')
 def favorites_results():
-    """Shows the user a nice message using their form results."""
-    pass
+    users_color = request.args.get('color')
+    users_animal = request.args.get('animal')
+    users_city = request.args.get('city')
+    return f'Wow, I didn\'t know {users_color} {users_animal} lived in {users_city}!'
 
 @app.route('/secret_message')
 def secret_message():
     """Shows the user a form to collect a secret message. Sends the result via
     the POST method to keep it a secret!"""
-    pass
-
-@app.route('/message_results', methods=['POST'])
-def message_results():
-    """Shows the user their message, with the letters in sorted order."""
-    pass
-
-@app.route('/calculator')
-def calculator():
-    """Shows the user a form to enter 2 numbers and an operation."""
     return """
-    <form action="/calculator_results" method="GET">
-        Please enter 2 numbers and select an operator.<br/><br/>
-        <input type="number" name="operand1">
-        <select name="operation">
-            <option value="add">+</option>
-            <option value="subtract">-</option>
-            <option value="multiply">*</option>
-            <option value="divide">/</option>
-        </select>
-        <input type="number" name="operand2">
+    <form action="/message_results" method="POST">
+        Enter a Secret Message:<br/>
+        <input type="text" name="message"><br/>
         <input type="submit" value="Submit!">
     </form>
     """
 
-@app.route('/calculator_results')
+@app.route('/message_results', methods=['POST'])
+def message_results():
+    """Shows the user their message, with the letters in sorted order."""
+    users_message = request.form.get('message')
+    scrambled_message = sort_letters(users_message)
+    return scrambled_message
+
+@app.route('/calculator')
+def calculator():
+    """Shows the user a form to enter 2 numbers and an operation."""
+    return render_template('calculator_form.html')
+
+@app.route('/calculator_results', methods=['GET'])
 def calculator_results():
     """Shows the user the result of their calculation."""
-    pass
+    context = {
+        'first_number': int(request.args.get('operand1')),
+        'second_number': int(request.args.get('operand2')),
+        'operation': request.args.get('operation')
+    }
+    if context['operation'] == "add":
+        result = context['first_number'] + context['second_number']
+    elif context['operation'] == "subtract":
+        result = context['first_number'] - context['second_number']
+    elif context['operation'] == "multiply":
+        result = context['first_number'] * context['second_number']
+    else:
+        result = context['first_number'] / context['second_number']
+
+    context['result'] = result
+
+    return render_template('calculator_results.html', **context)
+ 
+
 
 
 HOROSCOPE_PERSONALITIES = {
@@ -89,24 +117,23 @@ def horoscope_form():
     """Shows the user a form to fill out to select their horoscope."""
     return render_template('horoscope_form.html')
 
-@app.route('/horoscope_results')
+@app.route('/horoscope_results', methods=['GET'])
 def horoscope_results():
     """Shows the user the result for their chosen horoscope."""
 
-    # TODO: Get the sign the user entered in the form, based on their birthday
-    horoscope_sign = ''
+    name = request.args.get('users_name')
 
-    # TODO: Look up the user's personality in the HOROSCOPE_PERSONALITIES
-    # dictionary based on what the user entered
-    users_personality = ''
+    horoscope_sign = request.args.get('horoscope_sign')
 
-    # TODO: Generate a random number from 1 to 99
-    lucky_number = 0
+    users_personality = HOROSCOPE_PERSONALITIES[horoscope_sign]
+
+    lucky_number = random.randint(1, 99)
 
     context = {
         'horoscope_sign': horoscope_sign,
         'personality': users_personality, 
-        'lucky_number': lucky_number
+        'lucky_number': lucky_number,
+        'users_name': name
     }
 
     return render_template('horoscope_results.html', **context)

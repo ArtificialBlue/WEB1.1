@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Calculator Results</title>
-    </head>
-    <body>
-        <!-- Your HTML code goes here! -->
+{% extends 'base.html' %}
 
+{% block title %}
+    Calculator Results
+{% endblock %}
 
-
-
-
-        
-    </body>
-</html>
+{% block content %}
+    <h3> You chose to {{operation}} {{first_number}} and {{second_number}}. Your result is: {{result}}</h3>
+{% endblock %}
