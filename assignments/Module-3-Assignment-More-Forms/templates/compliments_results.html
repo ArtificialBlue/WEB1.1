@@ -5,9 +5,15 @@ Compliments Results
 {% endblock %}
 
 {% block content %}
+<h3>Hello {{name}}!</h3>
+{% if compliment_option == 'yes' %}
+    <h3>You are:</h3>
+    <ul>
+        {% for compliment in compliments %}
+        <li> {{compliment}} </li>
+        {% endfor %}
+    </ul>
+{% else %}
 
-<!-- Your HTML code goes here! -->
-
-
-
+{% endif %}
 {% endblock %}

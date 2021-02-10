@@ -52,15 +52,15 @@ def compliments():
     """Shows the user a form to get compliments."""
     return render_template('compliments_form.html')
 
-@app.route('/compliments_results')
+@app.route('/compliments_results', methods=['GET'])
 def compliments_results():
     """Show the user some compliments."""
     context = {
-        # TODO: Enter your context variables here.
+       'name': request.args.get('users_name'),
+       'compliment_option': request.args.get('wants_compliments'),
+       'compliments': random.sample(list_of_compliments, int(request.args.get('num_compliments')))
     }
-
     return render_template('compliments_results.html', **context)
-
 
 ################################################################################
 # ANIMAL FACTS ROUTE
@@ -74,17 +74,18 @@ animal_to_fact = {
     'narwhal': 'Narwhal tusks are really an "inside out" tooth.'
 }
 
-@app.route('/animal_facts')
+@app.route('/animal_facts', methods=['GET','POST'])
 def animal_facts():
     """Show a form to choose an animal and receive facts."""
-
-    # TODO: Collect the form data and save as variables
+    animal_list = animal_to_fact.keys()
 
     context = {
-        # TODO: Enter your context variables here for:
-        # - the list of all animals (get from animal_to_fact)
-        # - the chosen animal fact (may be None if the user hasn't filled out the form yet)
+        'animal_list': animal_list 
     }
+    if request.args.get('animal') != None:
+        selected_animal_fact = animal_to_fact[request.args.get('animal')]
+        context['selected_animal_fact'] = selected_animal_fact
+
     return render_template('animal_facts.html', **context)
 
 
@@ -132,31 +133,23 @@ def image_filter():
 
     if request.method == 'POST':
         
-        # TODO: Get the user's chosen filter type (whichever one they chose in the form) and save
-        # as a variable
-        filter_type = ''
+        filter_type = request.form.get("filter_type")
         
-        # Get the image file submitted by the user
         image = request.files.get('users_image')
 
-        # TODO: call `save_image()` on the image & the user's chosen filter type, save the returned
-        # value as the new file path
-
-        # TODO: Call `apply_filter()` on the file path & filter type
-
+        file_path = save_image(image, filter_type)
+        apply_filter(file_path,filter_type)
         image_url = f'./static/images/{image.filename}'
 
         context = {
-            # TODO: Add context variables here for:
-            # - The full list of filter types
-            # - The image URL
+            'filter_types': filter_types,
+            'image_url': image_url
         }
-
         return render_template('image_filter.html', **context)
 
     else: # if it's a GET request
         context = {
-            # TODO: Add context variable here for the full list of filter types
+            'filter_types': filter_types
         }
         return render_template('image_filter.html', **context)
 
@@ -176,16 +169,15 @@ pp = PrettyPrinter(indent=4)
 def gif_search():
     """Show a form to search for GIFs and show resulting GIFs from Tenor API."""
     if request.method == 'POST':
-        # TODO: Get the search query & number of GIFs requested by the user, store each as a 
-        # variable
+        search_query = request.form.get("search_query")
+        number_of_GIFs = request.form.get("quantity")
 
         response = requests.get(
             TENOR_URL,
             {
-                # TODO: Add in key-value pairs for:
-                # - 'q': the search query
-                # - 'key': the API key (defined above)
-                # - 'limit': the number of GIFs requested
+            'q': search_query,
+            'key': API_KEY,
+            'limit': number_of_GIFs
             })
 
         gifs = json.loads(response.content).get('results')
@@ -194,8 +186,7 @@ def gif_search():
             'gifs': gifs
         }
 
-        # Uncomment me to see the result JSON!
-        # pp.pprint(gifs)
+        pp.pprint(gifs)
 
         return render_template('gif_search.html', **context)
     else:
