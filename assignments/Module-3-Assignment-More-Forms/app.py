@@ -186,8 +186,6 @@ def gif_search():
             'gifs': gifs
         }
 
-        pp.pprint(gifs)
-
         return render_template('gif_search.html', **context)
     else:
         return render_template('gif_search.html')
