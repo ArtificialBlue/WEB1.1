@@ -57,10 +57,6 @@ def results():
 
     #pp.pprint(result_json)
 
-
-    # For the sunrise & sunset variables, I would recommend to turn them into
-    # datetime objects. You can do so using the `datetime.fromtimestamp()` 
-    # function.
     sunrise = datetime.fromtimestamp(result_json['sys']['sunrise'])
     sunset = datetime.fromtimestamp(result_json['sys']['sunset'])
     context = {
